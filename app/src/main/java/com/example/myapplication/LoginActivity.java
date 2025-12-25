@@ -28,6 +28,15 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (UserManager.getInstance(this).isLoggedIn()) {
+            // 1. 如果已经登录，直接跳转主页
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+
+            // 2. 关闭登录页，防止按返回键回到登录页
+            finish();
+            return; // 3. 必须 return，不执行后面的 setContentView
+        }
         setContentView(R.layout.activity_login);
 
         // 注意这里的 ID 变了

@@ -9,6 +9,8 @@ import com.example.myapplication.adapter.RecordAdapter;
 import com.example.myapplication.model.BaseResponse;
 import com.example.myapplication.model.ExamRecord;
 import com.example.myapplication.network.RetrofitClient;
+import com.example.myapplication.util.UserManager;
+
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -32,8 +34,7 @@ public class RecordActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-        // TODO: 实际开发中，请从 SharedPreferences 获取当前登录用户的 ID
-        long currentUserId = 20;
+        Long currentUserId = UserManager.getInstance(this).getUserId();
 
         RetrofitClient.getInstance().getApi().getExamRecords(currentUserId).enqueue(new Callback<BaseResponse<List<ExamRecord>>>() {
             @Override

@@ -49,7 +49,7 @@ public class UserManager {
      */
     public User getUser() {
         User user = new User();
-        user.id = sp.getLong(KEY_USER_ID, 20); // 默认值为 -1
+        user.id = sp.getLong(KEY_USER_ID, -1); // 默认值为 -1
         user.username = sp.getString(KEY_USERNAME, "未登录");
         user.realName = sp.getString(KEY_REALNAME, "");
         user.phone = sp.getString(KEY_PHONE, "");
@@ -60,16 +60,16 @@ public class UserManager {
      * 单独获取用户ID (方便接口调用)
      */
     public long getUserId() {
-        return sp.getLong(KEY_USER_ID, 20);
+        return sp.getLong(KEY_USER_ID, -1);
     }
 
     /**
      * 判断是否已登录
      */
-    public boolean isLoggedIn() {
-        return sp.getBoolean(KEY_IS_LOGIN, false) && getUserId() != -1;
-    }
 
+    public boolean isLoggedIn() {
+        return getUserId() != -1L;
+    }
     /**
      * 退出登录 (清空数据)
      */

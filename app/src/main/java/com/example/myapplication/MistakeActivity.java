@@ -11,6 +11,8 @@ import com.example.myapplication.adapter.MistakeAdapter;
 import com.example.myapplication.model.BaseResponse;
 import com.example.myapplication.model.Question;
 import com.example.myapplication.network.RetrofitClient;
+import com.example.myapplication.util.UserManager;
+
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -36,9 +38,7 @@ public class MistakeActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-        // TODO: 实际开发中，请从 SharedPreferences 获取当前登录用户的 ID
-        long currentUserId = 20; // 暂时写死测试
-
+        Long currentUserId = UserManager.getInstance(this).getUserId();
         RetrofitClient.getInstance().getApi().getWrongQuestions(currentUserId).enqueue(new Callback<BaseResponse<List<Question>>>() {
             @Override
             public void onResponse(Call<BaseResponse<List<Question>>> call, Response<BaseResponse<List<Question>>> response) {
@@ -77,14 +77,32 @@ public class MistakeActivity extends AppCompatActivity {
     }
 
     // 弹出解析对话框
+    // 弹出详细解析对话框
     private void showAnalysis(Question q) {
-        // 防止解析为空
-        String explanation = (q.explanation == null || q.explanation.isEmpty()) ? "暂无详细解析" : q.explanation;
+        // 1. 拼接选项内容 (让用户看到 A、B 具体是什么)
+        StringBuilder optionsBuilder = new StringBuilder();
 
+        if (q.optionA != null) optionsBuilder.append("A. ").append(q.optionA).append("\n");
+        if (q.optionB != null) optionsBuilder.append("B. ").append(q.optionB).append("\n");
+        if (q.optionC != null && !"NULL".equalsIgnoreCase(q.optionC)) optionsBuilder.append("C. ").append(q.optionC).append("\n");
+        if (q.optionD != null && !"NULL".equalsIgnoreCase(q.optionD)) optionsBuilder.append("D. ").append(q.optionD).append("\n");
+
+        // 2. 准备其他信息
+        String explanation = (q.explanation == null || q.explanation.isEmpty()) ? "暂无详细解析" : q.explanation;
+        String myAns = (q.userAnswer == null) ? "无" : q.userAnswer;
+
+        // 3. 构建完整的显示文本
+        String message =
+                "【选项详情】\n" + optionsBuilder.toString() +
+                        "\n----------------\n" +
+                        "【我的答案】 " + myAns + "\n" +
+                        "【正确答案】 " + q.answer + "\n\n";
+
+        // 4. 显示弹窗
         new AlertDialog.Builder(this)
-                .setTitle("题目解析")
-                .setMessage("【正确答案】 " + q.answer + "\n\n【解析】\n" + explanation)
-                .setPositiveButton("知道了", null)
+                .setTitle("题目详情")
+                .setMessage(message) // 显示拼接好的长文本
+                .setPositiveButton("明白了", null)
                 .show();
     }
 }

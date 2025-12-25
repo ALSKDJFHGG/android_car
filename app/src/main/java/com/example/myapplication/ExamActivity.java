@@ -21,6 +21,7 @@ import com.example.myapplication.model.ExamRecord;
 import com.example.myapplication.model.ExamRecordDetail;
 import com.example.myapplication.model.Question;
 import com.example.myapplication.network.RetrofitClient;
+import com.example.myapplication.util.UserManager;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ import retrofit2.Response;
 public class ExamActivity extends AppCompatActivity {
 
     // UI 控件
-    private TextView tvProgress, tvTimer, tvContent, tvType, tvAnalysisResult, tvAnalysis, tvTitle;
+    private TextView tvProgress, tvTimer, tvContent, tvType, tvAnalysisResult, tvTitle;
     private RecyclerView rvOptions;
     private Button btnPrev, btnNext, btnSubmit;
     private View layoutAnalysis;
@@ -344,7 +345,8 @@ public class ExamActivity extends AppCompatActivity {
 
     // 增加参数 List<ExamRecordDetail> details
     private void uploadScore(double scoreDouble, List<ExamRecordDetail> details) {
-        Long currentUserId = 20L; // 实际开发从 SharedPreferences 取
+        Long currentUserId = UserManager.getInstance(this).getUserId();
+        // 实际开发从 SharedPreferences 取
         String endTimeStr = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(new Date());
 
         // 随机练习没有 paperId，传 0L

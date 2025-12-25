@@ -59,8 +59,6 @@ public class ExamRecord {
         this.startTime = startTime;
         this.endTime = endTime;
         this.subject = subject;
-
-        // 你的逻辑：60分及格 (驾照考试通常是90分，这里按你的要求保留60)
-        this.passStatus = (score != null && score >= 60) ? 1 : 0;
+        this.passStatus = (score != null && score >= 90) ? 1 : 0;
     }
 }

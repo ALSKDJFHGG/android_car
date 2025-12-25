@@ -3,10 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="12dp"
-    android:layout_marginBottom="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="2dp"
+    android:layout_marginLeft="12dp"
+    android:layout_marginRight="12dp"
+    android:layout_marginBottom="10dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="3dp"
     app:cardBackgroundColor="#FFFFFF">
 
     <LinearLayout
@@ -15,51 +16,85 @@
         android:padding="16dp"
         android:orientation="vertical">
 
+        <!-- 1. 顶部标签 (保持不变) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
-
-            <!-- 题型标签 -->
             <TextView
                 android:id="@+id/tv_type_tag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="单选"
-                android:textSize="12sp"
-                android:textColor="#FFFFFF"
-                android:background="#2196F3"
-                android:paddingHorizontal="6dp"
-                android:paddingVertical="2dp"
-                android:layout_marginRight="8dp"/>
-
+                android:textSize="11sp"
+                android:textColor="@color/black"
+                android:background="@color/white"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:layout_marginRight="10dp"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="题目内容"
+                android:text="题目详情"
                 android:textStyle="bold"
-                android:textColor="#333"/>
+                android:textColor="#333"
+                android:textSize="15sp"/>
         </LinearLayout>
 
+        <!-- 2. 题目文字 (保持不变) -->
         <TextView
             android:id="@+id/tv_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="题目加载中..."
-            android:maxLines="3"
-            android:ellipsize="end"
+            android:layout_marginTop="10dp"
+            android:text="题目内容..."
             android:textColor="#555"
-            android:lineSpacingExtra="4dp"/>
+            android:textSize="15sp"
+            android:lineSpacingExtra="5dp"/>
 
+        <!-- ★★★ 3. 新增：题目图片区域 ★★★ -->
+        <ImageView
+            android:id="@+id/iv_mistake_img"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:layout_marginTop="10dp"
+            android:scaleType="fitCenter"
+            android:visibility="gone" />
+
+        <!-- 4. 我的错误答案 (保持不变) -->
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/tv_my_wrong_answer"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
+            android:layout_marginTop="8dp"
+            android:text="我的答案：A"
+            android:textColor="#F44336"
+            android:textStyle="bold"
+            android:textSize="13sp"/>
+
+        <!-- 5. 底部查看解析 (保持不变) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="点击查看解析 >"
-            android:textColor="#2196F3"
-            android:textSize="12sp"/>
+            android:gravity="end|center_vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="查看解析"
+                android:textColor="#2196F3"
+                android:textSize="13sp"
+                android:textStyle="bold"/>
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@android:drawable/ic_media_play"
+                app:tint="#2196F3"
+                android:layout_marginLeft="4dp"/>
+        </LinearLayout>
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>

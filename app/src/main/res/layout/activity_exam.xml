@@ -18,9 +18,18 @@
             android:id="@+id/tv_exam_progress"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="0.5"
             android:text="第 1 / 100 题"
             android:textColor="#666"/>
+
+        <TextView
+            android:id="@+id/tv_exam_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="模拟考试"
+            android:textColor="#666" />
+
         <TextView
             android:id="@+id/tv_timer"
             android:layout_width="wrap_content"
