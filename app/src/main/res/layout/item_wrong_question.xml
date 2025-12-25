@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginBottom="10dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- 题型标签 -->
+            <TextView
+                android:id="@+id/tv_wrong_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="单选"
+                android:textSize="11sp"
+                android:textColor="#FFFFFF"
+                android:background="#2196F3"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="2dp"
+                android:layout_marginRight="8dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="题目详情"
+                android:textStyle="bold"
+                android:textColor="#333"/>
+        </LinearLayout>
+
+        <!-- 题干 -->
+        <TextView
+            android:id="@+id/tv_wrong_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="这里是题目的具体内容，可能会比较长，需要自动换行显示..."
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:textColor="#555"
+            android:textSize="15sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="点击查看解析 >"
+            android:layout_marginTop="12dp"
+            android:textSize="12sp"
+            android:textColor="#2196F3"
+            android:layout_gravity="end"/>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="#FFFFFF">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tv_exam_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="全真模拟考试"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#333"/>
+
+        <TextView
+            android:id="@+id/tv_exam_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_exam_title"
+            android:layout_marginTop="6dp"
+            android:text="2025-05-20 10:00:00"
+            android:textSize="13sp"
+            android:textColor="#999"/>
+
+        <!-- 分数和状态 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:orientation="vertical"
+            android:gravity="end">
+
+            <TextView
+                android:id="@+id/tv_score"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="95.0"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#4CAF50"/>
+
+            <TextView
+                android:id="@+id/tv_pass_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="合格"
+                android:textSize="12sp"
+                android:background="#E8F5E9"
+                android:textColor="#4CAF50"
+                android:paddingHorizontal="4dp"
+                android:layout_marginTop="2dp"/>
+        </LinearLayout>
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>
