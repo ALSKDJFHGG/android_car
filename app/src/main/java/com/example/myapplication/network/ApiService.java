@@ -1,6 +1,7 @@
 package com.example.myapplication.network;
 
 import com.example.myapplication.model.BaseResponse;
+import com.example.myapplication.model.ChangePwdRequest;
 import com.example.myapplication.model.ExamRecord;
 import com.example.myapplication.model.LoginRequest;
 import com.example.myapplication.model.Question;
@@ -13,6 +14,8 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ApiService {
@@ -40,4 +43,7 @@ public interface ApiService {
     // 6. 提交成绩
     @POST("/api/v1/mobile/submit")
     Call<BaseResponse<String>> submitScore(@Body ExamRecord record);
+
+    @PUT("api/v1/mobile/auth/{id}")
+    Call<BaseResponse<Object>> changePassword(@Path("id") Long userId, @Body ChangePwdRequest request);
 }

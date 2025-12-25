@@ -14,6 +14,7 @@ import com.example.myapplication.model.BaseResponse;
 import com.example.myapplication.model.LoginRequest;
 import com.example.myapplication.model.User;
 import com.example.myapplication.network.RetrofitClient;
+import com.example.myapplication.util.UserManager;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -60,14 +61,16 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call<BaseResponse<User>> call, Response<BaseResponse<User>> response) {
+                User user = response.body().data;
                 if (response.body() != null && response.body().isSuccess()) {
+                    UserManager.getInstance(LoginActivity.this).saveUser(user);
                     Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
                 } else {
                     String msg = response.body() != null ? response.body().msg : "登录失败";
-                    Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
+                  //  Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
                 }
             }
 

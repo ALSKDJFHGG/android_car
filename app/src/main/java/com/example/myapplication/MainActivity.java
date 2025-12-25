@@ -28,6 +28,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnRandom.setOnClickListener(this);
         btnWrong.setOnClickListener(this);
         btnHistory.setOnClickListener(this);
+
+        View btnProfile = findViewById(R.id.cv_user_profile);
+        btnProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 跳转到个人中心
+                Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     /**

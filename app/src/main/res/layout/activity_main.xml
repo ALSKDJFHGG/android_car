@@ -30,6 +30,29 @@
             android:text="今天也要加油练习哦！"
             android:textColor="#DDFFFFFF"
             android:textSize="14sp"/>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_user_profile"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            app:cardCornerRadius="30dp"
+            app:cardElevation="4dp"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@android:drawable/sym_def_app_icon"
+                android:scaleType="centerCrop"
+                android:background="#E0E0E0"/>
+
+            <!-- 如果你有真实的头像图片，把 src 换成你的图片资源 -->
+
+        </androidx.cardview.widget.CardView>
     </RelativeLayout>
 
     <!-- 2. 功能菜单 Grid -->

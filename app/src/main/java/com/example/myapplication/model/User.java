@@ -4,67 +4,36 @@ import com.google.gson.annotations.SerializedName;
 
 public class User {
 
-    // 1. 用户ID (主键)
-    // 映射数据库字段: user_id
-    @SerializedName(value = "id", alternate = {"user_id", "userId"})
+    // 1. 映射 JSON 里的 "userId" -> Java 的 "id"
+    @SerializedName(value = "userId", alternate = {"id", "user_id"})
     public Long id;
 
-    // 2. 用户名
-    // 映射数据库字段: username
-    // 兼容注册接口用的: userName
-    @SerializedName(value = "username", alternate = {"userName"})
+    // 2. 映射 JSON 里的 "username"
+    @SerializedName("username")
     public String username;
 
-    // 3. 密码
-    // 映射数据库字段: password
-    // 兼容注册接口用的: userPassword
+    // 3. 映射 JSON 里的 "realname" (全小写) -> Java 的 "realName"
+    @SerializedName(value = "realname", alternate = {"realName", "real_name"})
+    public String realName;
+
+    // 4. 映射 JSON 里的 "phone"
+    @SerializedName("phone")
+    public String phone;
+
+    // 5. ★★★ 重点修改：JSON 里是 "role": "admin" (字符串) ★★★
+    // 你之前可能是 roleId (数字)，类型对不上会导致解析失败
+    @SerializedName(value = "role", alternate = {"roleId"})
+    public String role;
+
+    // 6. 密码 (登录返回的 JSON 里通常没有密码，但注册时需要，保留即可)
     @SerializedName(value = "password", alternate = {"userPassword"})
     public String password;
 
-    // 4. 真实姓名
-    // 映射数据库字段: real_name
-    @SerializedName(value = "realName", alternate = {"real_name"})
-    public String realName;
-
-    // 5. 手机号
-    // 映射数据库字段: phone
-    // 兼容注册接口用的: userPhoneNumber
-    @SerializedName(value = "phone", alternate = {"userPhoneNumber", "phoneNumber"})
-    public String phone;
-
-    // 6. 角色ID
-    // 映射数据库字段: role_id (默认2=普通用户)
-    @SerializedName(value = "roleId", alternate = {"role_id"})
-    public Integer roleId;
-
-    // 7. 状态
-    // 映射数据库字段: status (1-正常, 0-禁用)
-    @SerializedName("status")
-    public Integer status;
-
-    // 8. 创建时间
-    // 映射数据库字段: create_time
-    @SerializedName(value = "createTime", alternate = {"create_time"})
-    public String createTime;
-
-    // --- 构造函数 ---
-
-    // 必须保留一个空构造函数，供 Gson 解析使用
+    // 空构造函数 (必须有)
     public User() {
     }
 
-    // 方便注册时使用的构造函数
-    public User(String username, String phone, String password, String realName) {
-        this.username = username;
-        this.phone = phone;
-        this.password = password;
-        this.realName = realName;
-        // 默认给个角色ID，防止为空 (看你后端逻辑，如果后端处理了这里可以不写)
-        this.roleId = 2;
-        this.status = 1;
-    }
-
-    // 方便登录时使用的构造函数
+    // 登录用的构造函数
     public User(String phone, String password) {
         this.phone = phone;
         this.password = password;
