@@ -79,7 +79,7 @@ public class LoginActivity extends AppCompatActivity {
                     finish();
                 } else {
                     String msg = response.body() != null ? response.body().msg : "登录失败";
-                  //  Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
                 }
             }
 

@@ -16,25 +16,44 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * 题目选项适配器
+ * 用于显示单选题、多选题和判断题的选项
+ * 支持选项的选中状态管理和UI更新
+ *
+ * @author 开发者
+ * @version 1.0
+ */
 public class OptionAdapter extends RecyclerView.Adapter<OptionAdapter.ViewHolder> {
 
-    // 数据模型：选项 (例如 Label="A", Text="违反交通信号灯")
+    /**
+     * 选项数据模型
+     * 表示一个题目选项，包含选项标签（如"A"、"B"）和选项内容
+     */
     public static class OptionItem {
+        /** 选项标签，如"A"、"B"、"C"、"D" */
         public String label;
+        /** 选项内容文本 */
         public String text;
 
+        /**
+         * 构造选项项
+         * @param label 选项标签
+         * @param text 选项内容
+         */
         public OptionItem(String label, String text) {
             this.label = label;
             this.text = text;
         }
     }
 
+    /** 选项数据列表 */
     private List<OptionItem> mList = new ArrayList<>();
 
-    // 记录用户选中的 Label，例如 ["A", "C"]
+    /** 用户选中的选项标签列表，支持多选 */
     private List<String> mSelectedLabels = new ArrayList<>();
 
-    // 是否多选模式
+    /** 是否为多选模式 */
     private boolean isMultiSelect = false;
 
     /**
@@ -94,45 +113,59 @@ public class OptionAdapter extends RecyclerView.Adapter<OptionAdapter.ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         OptionItem item = mList.get(position);
 
+        // 设置选项标签和内容
         holder.tvLabel.setText(item.label);
         holder.tvText.setText(item.text);
 
-        // 判断当前这个选项是否被选中
+        // 检查当前选项是否被选中
         boolean isSelected = mSelectedLabels.contains(item.label);
 
-        // 根据选中状态改变 UI (背景色、字体颜色)
+        // 根据选中状态更新UI
+        updateOptionAppearance(holder, isSelected);
+
+        // 设置点击事件
+        holder.itemView.setOnClickListener(v -> handleOptionClick(item.label));
+    }
+
+    /**
+     * 根据选中状态更新选项的外观
+     * @param holder ViewHolder
+     * @param isSelected 是否选中
+     */
+    private void updateOptionAppearance(ViewHolder holder, boolean isSelected) {
         if (isSelected) {
-            // 选中状态：背景变蓝，圆圈变蓝
+            // 选中状态：蓝色背景，蓝色圆圈
             holder.root.setBackgroundResource(R.drawable.bg_option_selected);
             holder.tvLabel.setBackgroundResource(R.drawable.shape_circle_blue);
             holder.tvLabel.setTextColor(Color.WHITE);
         } else {
-            // 未选中状态：背景白色，圆圈灰色
+            // 未选中状态：白色背景，灰色圆圈
             holder.root.setBackgroundResource(R.drawable.bg_option_normal);
             holder.tvLabel.setBackgroundResource(R.drawable.shape_circle_gray);
             holder.tvLabel.setTextColor(Color.WHITE);
         }
+    }
 
-        // 点击事件
-        holder.itemView.setOnClickListener(v -> {
-            String label = item.label;
-
-            if (isMultiSelect) {
-                // --- 多选逻辑 ---
-                if (mSelectedLabels.contains(label)) {
-                    mSelectedLabels.remove(label); // 已选 -> 取消
-                } else {
-                    mSelectedLabels.add(label);    // 未选 -> 选中
-                }
+    /**
+     * 处理选项点击事件
+     * @param label 被点击的选项标签
+     */
+    private void handleOptionClick(String label) {
+        if (isMultiSelect) {
+            // 多选模式：切换选中状态
+            if (mSelectedLabels.contains(label)) {
+                mSelectedLabels.remove(label); // 取消选中
             } else {
-                // --- 单选逻辑 ---
-                mSelectedLabels.clear();       // 清空其他的
-                mSelectedLabels.add(label);    // 选中当前的
+                mSelectedLabels.add(label);    // 设为选中
             }
+        } else {
+            // 单选模式：清除其他选择，只选中当前项
+            mSelectedLabels.clear();
+            mSelectedLabels.add(label);
+        }
 
-            // 刷新列表显示
-            notifyDataSetChanged();
-        });
+        // 刷新列表显示
+        notifyDataSetChanged();
     }
 
     @Override
@@ -140,14 +173,25 @@ public class OptionAdapter extends RecyclerView.Adapter<OptionAdapter.ViewHolder
         return mList == null ? 0 : mList.size();
     }
 
-    // ViewHolder 类
+    /**
+     * ViewHolder类
+     * 持有选项项的视图引用，提高RecyclerView性能
+     */
     static class ViewHolder extends RecyclerView.ViewHolder {
+        /** 选项根布局 */
         LinearLayout root;
-        TextView tvLabel, tvText;
+        /** 选项标签文本视图 */
+        TextView tvLabel;
+        /** 选项内容文本视图 */
+        TextView tvText;
 
+        /**
+         * 构造函数
+         * @param itemView 选项项的视图
+         */
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            // 绑定 item_option.xml 里的 ID
+            // 绑定布局中的视图组件
             root = itemView.findViewById(R.id.layout_item_root);
             tvLabel = itemView.findViewById(R.id.tv_option_label);
             tvText = itemView.findViewById(R.id.tv_option_text);

@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +22,7 @@ import com.example.myapplication.model.ExamRecord;
 import com.example.myapplication.model.ExamRecordDetail;
 import com.example.myapplication.model.Question;
 import com.example.myapplication.network.RetrofitClient;
+import com.example.myapplication.util.Constants;
 import com.example.myapplication.util.UserManager;
 
 import java.text.SimpleDateFormat;
@@ -35,16 +37,36 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * 考试Activity
+ * 支持三种考试模式：
+ * - 顺序练习：按题目顺序逐题练习
+ * - 随机练习：随机抽取题目进行练习
+ * - 模拟考试：限时考试，完成后提交成绩
+ *
+ * 功能特性：
+ * - 支持科目一和科目四的选择
+ * - 题目类型：单选题、多选题、判断题
+ * - 图片题支持
+ * - 考试计时功能
+ * - 答案保存和恢复
+ * - 成绩上传和记录
+ *
+ * @author 开发者
+ * @version 1.0
+ */
 public class ExamActivity extends AppCompatActivity {
+
+    // 导入常量引用，方便使用
 
     // UI 控件
     private TextView tvProgress, tvTimer, tvContent, tvType, tvAnalysisResult, tvTitle;
     private RecyclerView rvOptions;
     private Button btnPrev, btnNext, btnSubmit;
     private View layoutAnalysis;
+    private ImageView ivQuestionImage;
 
     private ProgressDialog loadingDialog;
-    private android.widget.ImageView ivQuestionImage;
 
     // 数据变量
     private List<Question> questionList = new ArrayList<>();
@@ -69,11 +91,11 @@ public class ExamActivity extends AppCompatActivity {
 
         // 1. 获取传递过来的参数
         examType = getIntent().getStringExtra("exam_type");
-        if (examType == null) examType = "order";
+        if (examType == null) examType = Constants.Exam.MODE_ORDER;
 
-        // ★★★ 获取科目参数 (默认科目一) ★★★
+        // 获取科目参数 (默认科目一)
         subject = getIntent().getStringExtra("subject");
-        if (subject == null) subject = "科目一";
+        if (subject == null) subject = Constants.Exam.SUBJECT_ONE;
 
         // 2. 记录开始时间
         startTimeStr = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(new Date());
@@ -82,81 +104,140 @@ public class ExamActivity extends AppCompatActivity {
         loadQuestions();
     }
 
+    /**
+     * 初始化UI控件和事件监听器
+     */
     private void initViews() {
+        // 初始化文本视图控件
         tvProgress = findViewById(R.id.tv_exam_progress);
         tvTimer = findViewById(R.id.tv_timer);
         tvContent = findViewById(R.id.tv_question_content);
         tvType = findViewById(R.id.tv_question_type);
         tvAnalysisResult = findViewById(R.id.tv_analysis_result);
-        ivQuestionImage = findViewById(R.id.iv_question_image);
-
-        // 绑定解析相关控件
-
-        layoutAnalysis = findViewById(R.id.layout_analysis);
-
-        // 绑定标题 (显示：科目一 - 模拟考试)
         tvTitle = findViewById(R.id.tv_exam_title);
 
+        // 初始化图片控件
+        ivQuestionImage = findViewById(R.id.iv_question_image);
+
+        // 初始化布局控件
+        layoutAnalysis = findViewById(R.id.layout_analysis);
+
+        // 初始化选项列表
         rvOptions = findViewById(R.id.rv_options);
         rvOptions.setLayoutManager(new LinearLayoutManager(this));
         optionAdapter = new OptionAdapter();
         rvOptions.setAdapter(optionAdapter);
 
+        // 初始化按钮控件
         btnPrev = findViewById(R.id.btn_prev);
         btnNext = findViewById(R.id.btn_next);
         btnSubmit = findViewById(R.id.btn_submit);
 
-        // 构建标题文字
-        String typeName = "顺序练习";
-        if ("random".equals(examType)) typeName = "随机练习";
-        else if ("exam".equals(examType)) typeName = "模拟考试";
+        // 设置页面标题
+        setupTitle();
 
+        // 根据考试模式调整UI
+        setupUIMode();
+
+        // 设置按钮点击事件
+        setupClickListeners();
+    }
+
+    /**
+     * 设置页面标题
+     */
+    private void setupTitle() {
+        String typeName = getExamTypeDisplayName(examType);
         if (tvTitle != null) {
             tvTitle.setText(subject + " · " + typeName);
         }
+    }
 
-        // 根据模式调整 UI
-        if ("exam".equals(examType)) {
+    /**
+     * 获取考试类型的显示名称
+     */
+    private String getExamTypeDisplayName(String examType) {
+        switch (examType) {
+            case Constants.Exam.MODE_RANDOM:
+                return "随机练习";
+            case Constants.Exam.MODE_EXAM:
+                return "模拟考试";
+            case Constants.Exam.MODE_ORDER:
+            default:
+                return "顺序练习";
+        }
+    }
+
+    /**
+     * 根据考试模式调整UI显示
+     */
+    private void setupUIMode() {
+        if (Constants.Exam.MODE_EXAM.equals(examType)) {
+            // 模拟考试模式：显示计时器，提交按钮显示"交卷"
             startTimer();
             btnSubmit.setText("交 卷");
         } else {
+            // 练习模式：隐藏计时器，提交按钮显示"查看解析"
             tvTimer.setVisibility(View.GONE);
             btnSubmit.setText("查看解析");
         }
+    }
 
-        // --- 点击事件监听 ---
+    /**
+     * 设置所有按钮的点击事件监听器
+     */
+    private void setupClickListeners() {
+        // 上一题按钮
+        btnPrev.setOnClickListener(v -> navigateToPreviousQuestion());
 
-        btnPrev.setOnClickListener(v -> {
-            if (currentPosition > 0) {
-                saveCurrentAnswer();
-                currentPosition--;
-                showQuestion();
-            } else {
-                Toast.makeText(this, "已经是第一题了", Toast.LENGTH_SHORT).show();
-            }
-        });
+        // 下一题按钮
+        btnNext.setOnClickListener(v -> navigateToNextQuestion());
 
-        btnNext.setOnClickListener(v -> {
-            if (questionList.isEmpty()) return;
-            if (currentPosition < questionList.size() - 1) {
-                saveCurrentAnswer();
-                currentPosition++;
-                showQuestion();
-            } else {
-                Toast.makeText(this, "已经是最后一题了", Toast.LENGTH_SHORT).show();
-            }
-        });
+        // 提交/查看解析按钮
+        btnSubmit.setOnClickListener(v -> handleSubmit());
+    }
 
-        btnSubmit.setOnClickListener(v -> {
-            if (questionList.isEmpty()) return;
+    /**
+     * 导航到上一题
+     */
+    private void navigateToPreviousQuestion() {
+        if (currentPosition > 0) {
             saveCurrentAnswer();
+            currentPosition--;
+            showQuestion();
+        } else {
+            Toast.makeText(this, "已经是第一题了", Toast.LENGTH_SHORT).show();
+        }
+    }
 
-            if ("exam".equals(examType)) {
-                showSubmitDialog();
-            } else {
-                checkCurrentAnswer();
-            }
-        });
+    /**
+     * 导航到下一题
+     */
+    private void navigateToNextQuestion() {
+        if (questionList.isEmpty()) return;
+
+        if (currentPosition < questionList.size() - 1) {
+            saveCurrentAnswer();
+            currentPosition++;
+            showQuestion();
+        } else {
+            Toast.makeText(this, "已经是最后一题了", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * 处理提交按钮点击事件
+     */
+    private void handleSubmit() {
+        if (questionList.isEmpty()) return;
+
+        saveCurrentAnswer();
+
+        if (Constants.Exam.MODE_EXAM.equals(examType)) {
+            showSubmitDialog();
+        } else {
+            checkCurrentAnswer();
+        }
     }
 
     // --- 网络请求部分 ---
@@ -169,8 +250,8 @@ public class ExamActivity extends AppCompatActivity {
 
         Call<BaseResponse<List<Question>>> call;
 
-        // ★★★ 在这里把 subject 传给后端 ★★★
-        if ("random".equals(examType) || "exam".equals(examType)) {
+        // 根据考试模式选择不同的API接口
+        if (Constants.Exam.MODE_RANDOM.equals(examType) || Constants.Exam.MODE_EXAM.equals(examType)) {
             call = RetrofitClient.getInstance().getApi().getRandomQuestions(subject);
         } else {
             call = RetrofitClient.getInstance().getApi().getAllQuestions(subject);
@@ -212,45 +293,89 @@ public class ExamActivity extends AppCompatActivity {
 
     // --- 核心逻辑部分 ---
 
+    /**
+     * 显示当前题目
+     */
     private void showQuestion() {
+        if (questionList == null || questionList.isEmpty() || currentPosition >= questionList.size()) {
+            Log.e("ExamActivity", "题目数据异常或索引超出范围");
+            return;
+        }
+
         Question q = questionList.get(currentPosition);
 
+        // 更新进度显示
         tvProgress.setText("第 " + (currentPosition + 1) + " / " + questionList.size() + " 题");
-        tvContent.setText(q.content);
+
+        // 设置题目内容
+        tvContent.setText(q.content != null ? q.content : "");
 
         // 设置题型标签
-        if ("1".equals(q.type)) {
-            tvType.setText("单选题");
-        } else if ("2".equals(q.type)) {
-            tvType.setText("判断题");
-        } else {
-            tvType.setText("多选题");
+        setQuestionTypeLabel(q.type);
+
+        // 处理题目图片
+        handleQuestionImage(q.imageUrl);
+        // 设置题目选项
+        setupQuestionOptions(q);
+
+        // 恢复用户之前的选择
+        restoreUserSelection();
+
+        // 隐藏解析区域
+        layoutAnalysis.setVisibility(View.GONE);
+    }
+
+    /**
+     * 设置题目类型标签
+     */
+    private void setQuestionTypeLabel(String type) {
+        String typeLabel;
+        switch (type) {
+            case Constants.Exam.QUESTION_TYPE_SINGLE:
+                typeLabel = "单选题";
+                break;
+            case Constants.Exam.QUESTION_TYPE_JUDGE:
+                typeLabel = "判断题";
+                break;
+            case Constants.Exam.QUESTION_TYPE_MULTI:
+                typeLabel = "多选题";
+                break;
+            default:
+                typeLabel = "未知题型";
+                break;
         }
+        tvType.setText(typeLabel);
+    }
 
-        if (q.imageUrl != null && !q.imageUrl.isEmpty() && !"NULL".equalsIgnoreCase(q.imageUrl)) {
+    /**
+     * 处理题目图片显示
+     */
+    private void handleQuestionImage(String imageUrl) {
+        if (imageUrl != null && !imageUrl.isEmpty() && !Constants.ApiResponse.NULL_VALUE.equalsIgnoreCase(imageUrl)) {
+            ivQuestionImage.setVisibility(View.VISIBLE);
 
-            ivQuestionImage.setVisibility(View.VISIBLE); // 显示图片区域
+            String fullUrl = Constants.Network.IMAGE_BASE_URL + imageUrl;
+            Log.i("图片", "加载题目图片: " + fullUrl);
 
-
-            String fileName =q.imageUrl;
-            String fullUrl = "http://t7sxw4srx.hd-bkt.clouddn.com/" +"images/"+fileName;
-
-            Log.i("图片", "showQuestion: "+fullUrl);
-
-
-            // 使用 Glide 加载
+            // 使用 Glide 加载图片
             com.bumptech.glide.Glide.with(this)
                     .load(fullUrl)
-                    .placeholder(android.R.drawable.ic_menu_gallery) // 加载中显示的图
-                    .error(android.R.drawable.stat_notify_error)     // 加载失败显示的图
+                    .placeholder(android.R.drawable.ic_menu_gallery)
+                    .error(android.R.drawable.stat_notify_error)
                     .into(ivQuestionImage);
-
         } else {
-            // 没有图片，隐藏 ImageView，防止占用空间
+            // 没有图片时隐藏ImageView
             ivQuestionImage.setVisibility(View.GONE);
         }
-        // 构造选项
+    }
+
+    /**
+     * 设置题目选项
+     */
+    private void setupQuestionOptions(Question q) {
         List<OptionAdapter.OptionItem> options = new ArrayList<>();
+
+        // 添加选项（最多支持4个选项）
         if (!TextUtils.isEmpty(q.optionA)) options.add(new OptionAdapter.OptionItem("A", q.optionA));
         if (!TextUtils.isEmpty(q.optionB)) options.add(new OptionAdapter.OptionItem("B", q.optionB));
         if (!TextUtils.isEmpty(q.optionC) && !"NULL".equalsIgnoreCase(q.optionC)) {
@@ -260,15 +385,17 @@ public class ExamActivity extends AppCompatActivity {
             options.add(new OptionAdapter.OptionItem("D", q.optionD));
         }
 
-        // type=3 为多选，其他单选
-        boolean isMulti = "3".equals(q.type);
-        optionAdapter.setNewData(options, isMulti);
+        // 判断是否为多选题
+        boolean isMultiSelect = Constants.Exam.QUESTION_TYPE_MULTI.equals(q.type);
+        optionAdapter.setNewData(options, isMultiSelect);
+    }
 
-        // 恢复选中状态
-        String savedAns = userAnswers.get(currentPosition);
-        optionAdapter.setSelectedAnswer(savedAns);
-
-        layoutAnalysis.setVisibility(View.GONE);
+    /**
+     * 恢复用户之前的选择
+     */
+    private void restoreUserSelection() {
+        String savedAnswer = userAnswers.get(currentPosition);
+        optionAdapter.setSelectedAnswer(savedAnswer);
     }
 
     private void saveCurrentAnswer() {
@@ -393,9 +520,11 @@ public class ExamActivity extends AppCompatActivity {
                 .show();
     }
 
+    /**
+     * 开始考试计时器
+     */
     private void startTimer() {
-        long totalMillis = 45 * 60 * 1000;
-        timer = new CountDownTimer(totalMillis, 1000) {
+        timer = new CountDownTimer(Constants.Exam.EXAM_DURATION_MS, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 long min = millisUntilFinished / 60000;

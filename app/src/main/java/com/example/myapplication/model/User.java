@@ -2,40 +2,80 @@ package com.example.myapplication.model;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * 用户数据模型
+ * 表示系统用户的完整信息
+ *
+ * @author 开发者
+ * @version 1.0
+ */
 public class User {
 
-    // 1. 映射 JSON 里的 "userId" -> Java 的 "id"
+    /** 用户唯一标识ID */
     @SerializedName(value = "userId", alternate = {"id", "user_id"})
     public Long id;
 
-    // 2. 映射 JSON 里的 "username"
+    /** 用户名 */
     @SerializedName("username")
     public String username;
 
-    // 3. 映射 JSON 里的 "realname" (全小写) -> Java 的 "realName"
+    /** 真实姓名 */
     @SerializedName(value = "realname", alternate = {"realName", "real_name"})
     public String realName;
 
-    // 4. 映射 JSON 里的 "phone"
+    /** 手机号码 */
     @SerializedName("phone")
     public String phone;
 
-    // 5. ★★★ 重点修改：JSON 里是 "role": "admin" (字符串) ★★★
-    // 你之前可能是 roleId (数字)，类型对不上会导致解析失败
+    /** 用户角色，如"admin"、"user"等 */
     @SerializedName(value = "role", alternate = {"roleId"})
     public String role;
 
-    // 6. 密码 (登录返回的 JSON 里通常没有密码，但注册时需要，保留即可)
+    /** 用户密码（注册和登录时使用） */
     @SerializedName(value = "password", alternate = {"userPassword"})
     public String password;
 
-    // 空构造函数 (必须有)
+    /**
+     * 默认构造函数
+     */
     public User() {
     }
 
-    // 登录用的构造函数
+    /**
+     * 登录用的构造函数
+     * @param phone 手机号码
+     * @param password 密码
+     */
     public User(String phone, String password) {
         this.phone = phone;
         this.password = password;
+    }
+
+    /**
+     * 获取用户显示名称
+     * 优先显示真实姓名，如果为空则显示用户名
+     * @return 用户显示名称
+     */
+    public String getDisplayName() {
+        return realName != null && !realName.trim().isEmpty() ? realName : username;
+    }
+
+    /**
+     * 检查是否为管理员
+     * @return true表示管理员，false表示普通用户
+     */
+    public boolean isAdmin() {
+        return "admin".equals(role);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", realName='" + realName + '\'' +
+                ", phone='" + phone + '\'' +
+                ", role='" + role + '\'' +
+                '}';
     }
 }
