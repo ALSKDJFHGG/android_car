@@ -260,13 +260,8 @@ public class ExamActivity extends AppCompatActivity {
             return;
         }
 
-        loadingDialog = new ProgressDialog(this);
-        loadingDialog.setMessage("正在加载 " + subject + " 题库...");
-        loadingDialog.setCancelable(false);
-        loadingDialog.setCanceledOnTouchOutside(false);
-        loadingDialog.show();
-
-        // 禁用所有按钮
+        // 显示加载对话框并禁用按钮
+        showLoadingDialog("正在加载 " + subject + " 题库...");
         btnPrev.setEnabled(false);
         btnNext.setEnabled(false);
         btnSubmit.setEnabled(false);

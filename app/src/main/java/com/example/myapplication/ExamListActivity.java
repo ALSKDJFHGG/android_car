@@ -42,11 +42,16 @@ public class ExamListActivity extends AppCompatActivity {
     // 数据
     private ExamListAdapter adapter;
     private List<ExamPaper> examList = new ArrayList<>();
+    
+    // 防止重复请求的标志
+    private boolean isLoading = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exam_list);
+        
+        Log.d("ExamListActivity", "onCreate: Activity创建");
 
         initViews();
         setupRecyclerView();
@@ -98,16 +103,29 @@ public class ExamListActivity extends AppCompatActivity {
      */
     private void loadExamList() {
         // 防止重复请求
-        if (progressBar != null && progressBar.getVisibility() == View.VISIBLE) {
+        if (isLoading) {
+            Log.d("ExamListActivity", "请求正在进行中，忽略重复请求");
             return;
         }
 
+        isLoading = true;
+        String fullUrl = Constants.Network.BASE_URL + "api/v1/mobile/exam/list";
+        Log.d("ExamListActivity", "开始加载考试列表");
+        Log.d("ExamListActivity", "完整URL: " + fullUrl);
+        Log.d("ExamListActivity", "Base URL: " + Constants.Network.BASE_URL);
         showLoading(true);
 
-        RetrofitClient.getInstance().getApi().getExamList().enqueue(new Callback<ExamListResponse>() {
+        Call<ExamListResponse> call = RetrofitClient.getInstance().getApi().getExamList();
+        Log.d("ExamListActivity", "创建请求Call对象: " + call.toString());
+        Log.d("ExamListActivity", "准备发送请求...");
+        
+        call.enqueue(new Callback<ExamListResponse>() {
             @Override
             public void onResponse(Call<ExamListResponse> call, Response<ExamListResponse> response) {
+                isLoading = false;
                 showLoading(false);
+                
+                Log.d("ExamListActivity", "收到响应，状态码: " + response.code() + ", 是否成功: " + response.isSuccessful());
 
                 if (response.isSuccessful() && response.body() != null) {
                     ExamListResponse examResponse = response.body();
@@ -136,7 +154,10 @@ public class ExamListActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ExamListResponse> call, Throwable t) {
+                isLoading = false;
                 showLoading(false);
+                Log.e("ExamListActivity", "网络请求失败", t);
+                Log.e("ExamListActivity", "错误信息: " + t.getMessage());
                 showError("网络错误：" + t.getMessage());
                 t.printStackTrace();
             }
