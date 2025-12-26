@@ -97,6 +97,11 @@ public class ExamListActivity extends AppCompatActivity {
      * 加载考试列表数据
      */
     private void loadExamList() {
+        // 防止重复请求
+        if (progressBar != null && progressBar.getVisibility() == View.VISIBLE) {
+            return;
+        }
+
         showLoading(true);
 
         RetrofitClient.getInstance().getApi().getExamList().enqueue(new Callback<ExamListResponse>() {

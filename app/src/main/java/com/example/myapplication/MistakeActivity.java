@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +23,7 @@ public class MistakeActivity extends AppCompatActivity {
 
     private TextView tvCount;
     private RecyclerView recyclerView;
+    private ProgressDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,10 +40,21 @@ public class MistakeActivity extends AppCompatActivity {
     }
 
     private void loadData() {
+        // 防止重复请求
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            return;
+        }
+
+        // 显示加载对话框
+        showLoadingDialog("正在加载错题...");
+
         Long currentUserId = UserManager.getInstance(this).getUserId();
         RetrofitClient.getInstance().getApi().getWrongQuestions(currentUserId).enqueue(new Callback<BaseResponse<List<Question>>>() {
             @Override
             public void onResponse(Call<BaseResponse<List<Question>>> call, Response<BaseResponse<List<Question>>> response) {
+                // 隐藏加载对话框
+                hideLoadingDialog();
+
                 if (response.body() != null && response.body().isSuccess()) {
                     List<Question> list = response.body().data;
 
@@ -71,9 +84,49 @@ public class MistakeActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<BaseResponse<List<Question>>> call, Throwable t) {
+                // 隐藏加载对话框
+                hideLoadingDialog();
                 Toast.makeText(MistakeActivity.this, "加载失败: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    /**
+     * 显示加载对话框
+     * @param message 加载提示信息
+     */
+    private void showLoadingDialog(String message) {
+        if (isFinishing()) {
+            return;
+        }
+        if (loadingDialog == null) {
+            loadingDialog = new ProgressDialog(this);
+            loadingDialog.setCancelable(false);
+            loadingDialog.setCanceledOnTouchOutside(false);
+        }
+        loadingDialog.setMessage(message);
+        if (!loadingDialog.isShowing()) {
+            loadingDialog.show();
+        }
+    }
+
+    /**
+     * 隐藏加载对话框
+     */
+    private void hideLoadingDialog() {
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            try {
+                loadingDialog.dismiss();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        hideLoadingDialog();
     }
 
     // 弹出解析对话框

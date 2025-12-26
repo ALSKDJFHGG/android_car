@@ -255,10 +255,21 @@ public class ExamActivity extends AppCompatActivity {
     // --- 网络请求部分 ---
 
     private void loadQuestions() {
+        // 防止重复请求
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            return;
+        }
+
         loadingDialog = new ProgressDialog(this);
         loadingDialog.setMessage("正在加载 " + subject + " 题库...");
         loadingDialog.setCancelable(false);
+        loadingDialog.setCanceledOnTouchOutside(false);
         loadingDialog.show();
+
+        // 禁用所有按钮
+        btnPrev.setEnabled(false);
+        btnNext.setEnabled(false);
+        btnSubmit.setEnabled(false);
 
         Call<BaseResponse<List<Question>>> call;
 
@@ -272,9 +283,9 @@ public class ExamActivity extends AppCompatActivity {
         call.enqueue(new Callback<BaseResponse<List<Question>>>() {
             @Override
             public void onResponse(Call<BaseResponse<List<Question>>> call, Response<BaseResponse<List<Question>>> response) {
-                if (loadingDialog != null && loadingDialog.isShowing()) {
-                    loadingDialog.dismiss();
-                }
+                // 隐藏加载对话框并启用按钮
+                hideLoadingDialog();
+                enableButtons();
 
                 if (response.body() != null && response.body().isSuccess()) {
                     questionList = response.body().data;
@@ -294,9 +305,10 @@ public class ExamActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<BaseResponse<List<Question>>> call, Throwable t) {
-                if (loadingDialog != null && loadingDialog.isShowing()) {
-                    loadingDialog.dismiss();
-                }
+                // 隐藏加载对话框并启用按钮
+                hideLoadingDialog();
+                enableButtons();
+
                 Toast.makeText(ExamActivity.this, "网络错误：" + t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("ExamActivity", "网络错误详情", t);
             }
@@ -484,6 +496,17 @@ public class ExamActivity extends AppCompatActivity {
 
     // 增加参数 List<ExamRecordDetail> details
     private void uploadScore(double scoreDouble, List<ExamRecordDetail> details) {
+        // 防止重复提交
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            return;
+        }
+
+        // 显示加载对话框并禁用按钮
+        showLoadingDialog("正在提交成绩...");
+        btnPrev.setEnabled(false);
+        btnNext.setEnabled(false);
+        btnSubmit.setEnabled(false);
+
         Long currentUserId = UserManager.getInstance(this).getUserId();
         // 实际开发从 SharedPreferences 取
         String endTimeStr = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(new Date());
@@ -512,11 +535,15 @@ public class ExamActivity extends AppCompatActivity {
         RetrofitClient.getInstance().getApi().submitScore(record).enqueue(new Callback<BaseResponse<String>>() {
             @Override
             public void onResponse(Call<BaseResponse<String>> call, Response<BaseResponse<String>> response) {
+                // 隐藏加载对话框
+                hideLoadingDialog();
                 showResultDialog((int) scoreDouble);
             }
 
             @Override
             public void onFailure(Call<BaseResponse<String>> call, Throwable t) {
+                // 隐藏加载对话框
+                hideLoadingDialog();
                 showResultDialog((int) scoreDouble);
                 Toast.makeText(ExamActivity.this, "成绩上传失败", Toast.LENGTH_SHORT).show();
             }
@@ -553,9 +580,51 @@ public class ExamActivity extends AppCompatActivity {
         }.start();
     }
 
+    /**
+     * 显示加载对话框
+     * @param message 加载提示信息
+     */
+    private void showLoadingDialog(String message) {
+        if (isFinishing()) {
+            return;
+        }
+        if (loadingDialog == null) {
+            loadingDialog = new ProgressDialog(this);
+            loadingDialog.setCancelable(false);
+            loadingDialog.setCanceledOnTouchOutside(false);
+        }
+        loadingDialog.setMessage(message);
+        if (!loadingDialog.isShowing()) {
+            loadingDialog.show();
+        }
+    }
+
+    /**
+     * 隐藏加载对话框
+     */
+    private void hideLoadingDialog() {
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            try {
+                loadingDialog.dismiss();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 启用所有按钮
+     */
+    private void enableButtons() {
+        btnPrev.setEnabled(true);
+        btnNext.setEnabled(true);
+        btnSubmit.setEnabled(true);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         if (timer != null) timer.cancel();
+        hideLoadingDialog();
     }
 }

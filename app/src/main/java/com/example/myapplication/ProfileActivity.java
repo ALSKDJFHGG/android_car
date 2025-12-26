@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,6 +26,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ProfileActivity extends AppCompatActivity {
+
+    private ProgressDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +110,14 @@ public class ProfileActivity extends AppCompatActivity {
      * 发送修改密码请求
      */
     private void doChangePassword(String oldPwd, String newPwd, String validPwd, AlertDialog dialog) {
+        // 防止重复请求
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            return;
+        }
+
+        // 显示加载对话框
+        showLoadingDialog("正在修改密码...");
+
         long userId = UserManager.getInstance(this).getUserId();
         ChangePwdRequest request = new ChangePwdRequest(oldPwd, newPwd, validPwd);
 
@@ -114,6 +125,9 @@ public class ProfileActivity extends AppCompatActivity {
                 .enqueue(new Callback<BaseResponse<Object>>() {
                     @Override
                     public void onResponse(Call<BaseResponse<Object>> call, Response<BaseResponse<Object>> response) {
+                        // 隐藏加载对话框
+                        hideLoadingDialog();
+
                         if (response.body() != null && response.body().isSuccess()) {
                             // 修改成功
                             dialog.dismiss(); // 关闭弹窗
@@ -129,9 +143,49 @@ public class ProfileActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<BaseResponse<Object>> call, Throwable t) {
+                        // 隐藏加载对话框
+                        hideLoadingDialog();
                         Toast.makeText(ProfileActivity.this, "网络错误: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    /**
+     * 显示加载对话框
+     * @param message 加载提示信息
+     */
+    private void showLoadingDialog(String message) {
+        if (isFinishing()) {
+            return;
+        }
+        if (loadingDialog == null) {
+            loadingDialog = new ProgressDialog(this);
+            loadingDialog.setCancelable(false);
+            loadingDialog.setCanceledOnTouchOutside(false);
+        }
+        loadingDialog.setMessage(message);
+        if (!loadingDialog.isShowing()) {
+            loadingDialog.show();
+        }
+    }
+
+    /**
+     * 隐藏加载对话框
+     */
+    private void hideLoadingDialog() {
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            try {
+                loadingDialog.dismiss();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        hideLoadingDialog();
     }
 
     /**

@@ -16,7 +16,7 @@ public class Constants {
         /** 网络请求超时时间（秒） */
         public static final int TIMEOUT_SECONDS = 90;
         /** 服务器基础URL */
-        public static final String BASE_URL = "http://192.168.43.212:8080/";
+        public static final String BASE_URL = "http://10.0.2.2:8080/";
         /** 图片基础URL */
         public static final String IMAGE_BASE_URL = "http://t7sxw4srx.hd-bkt.clouddn.com/images/";
     }

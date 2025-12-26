@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -25,6 +26,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etusername, etPassword;
     private Button btnLogin;
     private TextView tvRegister;
+    private ProgressDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +65,16 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        // 防止重复点击
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            return;
+        }
+
         Log.d("LoginActivity", "开始登录，用户名: " + username);
+
+        // 显示加载对话框并禁用按钮
+        showLoadingDialog("正在登录...");
+        btnLogin.setEnabled(false);
 
         // 构造请求对象
         LoginRequest request = new LoginRequest(username, password);
@@ -73,6 +84,10 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call<BaseResponse<User>> call, Response<BaseResponse<User>> response) {
+                // 隐藏加载对话框并启用按钮
+                hideLoadingDialog();
+                btnLogin.setEnabled(true);
+
                 Log.d("LoginActivity", "收到登录响应，状态码: " + response.code());
                 
                 // 检查Activity是否还存在
@@ -131,6 +146,10 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<BaseResponse<User>> call, Throwable t) {
+                // 隐藏加载对话框并启用按钮
+                hideLoadingDialog();
+                btnLogin.setEnabled(true);
+
                 Log.e("LoginActivity", "登录请求失败", t);
                 
                 // 检查Activity是否还存在
@@ -177,5 +196,43 @@ public class LoginActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 显示加载对话框
+     * @param message 加载提示信息
+     */
+    private void showLoadingDialog(String message) {
+        if (isFinishing()) {
+            return;
+        }
+        if (loadingDialog == null) {
+            loadingDialog = new ProgressDialog(this);
+            loadingDialog.setCancelable(false);
+            loadingDialog.setCanceledOnTouchOutside(false);
+        }
+        loadingDialog.setMessage(message);
+        if (!loadingDialog.isShowing()) {
+            loadingDialog.show();
+        }
+    }
+
+    /**
+     * 隐藏加载对话框
+     */
+    private void hideLoadingDialog() {
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            try {
+                loadingDialog.dismiss();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        hideLoadingDialog();
     }
 }

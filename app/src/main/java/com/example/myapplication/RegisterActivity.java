@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
@@ -22,6 +23,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText etUsername, etPhone, etPassword;
     private Button btnRegister;
     private TextView tvBackLogin;
+    private ProgressDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +56,15 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
+        // 防止重复点击
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            return;
+        }
+
+        // 显示加载对话框并禁用按钮
+        showLoadingDialog("正在注册...");
+        btnRegister.setEnabled(false);
+
         // 3. 构造符合接口要求的对象
         RegisterRequest request = new RegisterRequest(name, phone, pass);
 
@@ -62,6 +73,10 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call<BaseResponse<User>> call, Response<BaseResponse<User>> response) {
+                // 隐藏加载对话框并启用按钮
+                hideLoadingDialog();
+                btnRegister.setEnabled(true);
+
                 // 请求成功 (服务器有响应)
                 if (response.body() != null && response.body().isSuccess()) {
                     Toast.makeText(RegisterActivity.this, "注册成功！", Toast.LENGTH_LONG).show();
@@ -77,10 +92,52 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<BaseResponse<User>> call, Throwable t) {
+                // 隐藏加载对话框并启用按钮
+                hideLoadingDialog();
+                btnRegister.setEnabled(true);
+
                 // 网络错误 (没联网、服务器没开、IP填错)
                 Toast.makeText(RegisterActivity.this, "网络连接失败: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 t.printStackTrace();
             }
         });
+    }
+
+    /**
+     * 显示加载对话框
+     * @param message 加载提示信息
+     */
+    private void showLoadingDialog(String message) {
+        if (isFinishing()) {
+            return;
+        }
+        if (loadingDialog == null) {
+            loadingDialog = new ProgressDialog(this);
+            loadingDialog.setCancelable(false);
+            loadingDialog.setCanceledOnTouchOutside(false);
+        }
+        loadingDialog.setMessage(message);
+        if (!loadingDialog.isShowing()) {
+            loadingDialog.show();
+        }
+    }
+
+    /**
+     * 隐藏加载对话框
+     */
+    private void hideLoadingDialog() {
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            try {
+                loadingDialog.dismiss();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        hideLoadingDialog();
     }
 }
