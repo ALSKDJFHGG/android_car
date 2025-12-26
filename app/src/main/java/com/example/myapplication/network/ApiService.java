@@ -2,6 +2,7 @@ package com.example.myapplication.network;
 
 import com.example.myapplication.model.BaseResponse;
 import com.example.myapplication.model.ChangePwdRequest;
+import com.example.myapplication.model.ExamListResponse;
 import com.example.myapplication.model.ExamRecord;
 import com.example.myapplication.model.LoginRequest;
 import com.example.myapplication.model.Question;
@@ -43,6 +44,13 @@ public interface ApiService {
      */
     @POST("/api/v1/mobile/auth/register")
     Call<BaseResponse<User>> register(@Body RegisterRequest request);
+
+    /**
+     * 获取考试列表
+     * @return 考试列表响应
+     */
+    @GET("/api/v1/mobile/exam/list")
+    Call<ExamListResponse> getExamList();
 
     /**
      * 获取所有题目（顺序练习）

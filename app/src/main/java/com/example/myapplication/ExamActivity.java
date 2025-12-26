@@ -79,6 +79,8 @@ public class ExamActivity extends AppCompatActivity {
     // 模式相关
     private String examType = "order";
     private String subject = "科目一"; // ★★★ 新增：当前科目 ★★★
+    private int paperId = -1; // 试卷ID，从考试列表跳转时使用
+    private String paperName = ""; // 试卷名称
     private CountDownTimer timer;
 
     // 记录考试开始时间
@@ -96,6 +98,10 @@ public class ExamActivity extends AppCompatActivity {
         // 获取科目参数 (默认科目一)
         subject = getIntent().getStringExtra("subject");
         if (subject == null) subject = Constants.Exam.SUBJECT_ONE;
+
+        // 获取试卷信息（从考试列表跳转时）
+        paperId = getIntent().getIntExtra("paper_id", -1);
+        paperName = getIntent().getStringExtra("paper_name");
 
         // 2. 记录开始时间
         startTimeStr = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(new Date());
@@ -147,9 +153,15 @@ public class ExamActivity extends AppCompatActivity {
      * 设置页面标题
      */
     private void setupTitle() {
-        String typeName = getExamTypeDisplayName(examType);
         if (tvTitle != null) {
-            tvTitle.setText(subject + " · " + typeName);
+            if (paperName != null && !paperName.isEmpty()) {
+                // 如果有试卷名称，显示试卷名称
+                tvTitle.setText(paperName);
+            } else {
+                // 否则显示科目和考试类型
+                String typeName = getExamTypeDisplayName(examType);
+                tvTitle.setText(subject + " · " + typeName);
+            }
         }
     }
 

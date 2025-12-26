@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.card_start_random_exam).setOnClickListener(this); // 随机练习
         findViewById(R.id.card_wrong_book).setOnClickListener(this);       // 错题本
         findViewById(R.id.card_history).setOnClickListener(this);          // 考试记录
+        findViewById(R.id.card_exam_list).setOnClickListener(this);
 
         // 个人中心按钮 - 使用独立的点击监听器
         findViewById(R.id.cv_user_profile).setOnClickListener(v -> {
@@ -115,6 +116,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else if (viewId == R.id.card_history) {
             // 考试记录 - 直接跳转
             navigateToRecord();
+        } else if (viewId == R.id.card_exam_list) {
+            // 考试列表 - 直接跳转
+            navigateToExamList();
         }
     }
 
@@ -131,6 +135,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void navigateToRecord() {
         Intent intent = new Intent(this, RecordActivity.class);
+        startActivity(intent);
+    }
+
+    /**
+     * 跳转到考试列表页面
+     */
+    private void navigateToExamList() {
+        Intent intent = new Intent(this, ExamListActivity.class);
         startActivity(intent);
     }
 }

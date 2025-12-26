@@ -4,13 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F0F2F5">
+    android:background="@color/background_light">
 
     <!-- 1. 顶部用户信息区 -->
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="180dp"
-        android:background="#2196F3"
+        android:layout_height="200dp"
+        android:background="@drawable/bg_gradient_header"
         android:padding="24dp">
 
         <TextView
@@ -18,9 +18,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="欢迎回来，学员"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp"
-            android:textStyle="bold"/>
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:shadowColor="@color/black"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -28,17 +32,18 @@
             android:layout_below="@id/tv_welcome"
             android:layout_marginTop="8dp"
             android:text="今天也要加油练习哦！"
-            android:textColor="#DDFFFFFF"
-            android:textSize="14sp"/>
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:alpha="0.9"/>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cv_user_profile"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            app:cardCornerRadius="30dp"
-            app:cardElevation="4dp"
+            app:cardCornerRadius="32dp"
+            app:cardElevation="8dp"
             android:foreground="?android:attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true">
@@ -48,9 +53,8 @@
                 android:layout_height="match_parent"
                 android:src="@android:drawable/sym_def_app_icon"
                 android:scaleType="centerCrop"
-                android:background="#E0E0E0"/>
-
-            <!-- 如果你有真实的头像图片，把 src 换成你的图片资源 -->
+                android:background="@color/primary_blue_light"
+                android:padding="8dp"/>
 
         </androidx.cardview.widget.CardView>
     </RelativeLayout>
@@ -60,9 +64,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:columnCount="2"
-        android:rowCount="3"
+        android:rowCount="4"
         android:padding="16dp"
-        android:layout_marginTop="-40dp">
+        android:layout_marginTop="-50dp">
 
         <!-- ============ 第一行：核心功能 (C位大卡片) ============ -->
 
@@ -70,32 +74,32 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/card_start_exam"
             android:layout_width="0dp"
-            android:layout_height="100dp"
+            android:layout_height="110dp"
             android:layout_columnSpan="2"
             android:layout_columnWeight="1"
             android:layout_margin="8dp"
             android:foreground="?android:attr/selectableItemBackground"
-            app:cardBackgroundColor="#E3F2FD"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
+            app:cardBackgroundColor="@color/background_card"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:orientation="horizontal">
-                <!-- 图标稍微大一点 -->
+                android:orientation="horizontal"
+                android:padding="16dp">
                 <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
                     android:src="@android:drawable/ic_menu_edit"
-                    app:tint="#2196F3"/>
+                    app:tint="@color/accent_orange"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
                     android:text="全真模拟考试"
-                    android:textColor="#2196F3"
-                    android:textSize="18sp"
+                    android:textColor="@color/primary_blue"
+                    android:textSize="20sp"
                     android:textStyle="bold"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
@@ -110,24 +114,28 @@
             android:layout_columnWeight="1"
             android:layout_margin="8dp"
             android:foreground="?android:attr/selectableItemBackground"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
+            app:cardBackgroundColor="@color/background_card"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="12dp">
                 <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@android:drawable/ic_menu_sort_by_size"/>
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@android:drawable/ic_menu_sort_by_size"
+                    app:tint="@color/primary_blue"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="顺序练习"
                     android:textSize="16sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -139,24 +147,28 @@
             android:layout_columnWeight="1"
             android:layout_margin="8dp"
             android:foreground="?android:attr/selectableItemBackground"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
+            app:cardBackgroundColor="@color/background_card"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="12dp">
                 <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@android:drawable/ic_menu_help"/>
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@android:drawable/ic_menu_help"
+                    app:tint="@color/accent_green"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="随机练习"
                     android:textSize="16sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -170,24 +182,28 @@
             android:layout_columnWeight="1"
             android:layout_margin="8dp"
             android:foreground="?android:attr/selectableItemBackground"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
+            app:cardBackgroundColor="@color/background_card"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="12dp">
                 <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@android:drawable/ic_delete"/>
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@android:drawable/ic_delete"
+                    app:tint="@color/accent_red"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="我的错题"
                     android:textSize="16sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -199,24 +215,63 @@
             android:layout_columnWeight="1"
             android:layout_margin="8dp"
             android:foreground="?android:attr/selectableItemBackground"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
+            app:cardBackgroundColor="@color/background_card"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="12dp">
                 <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@android:drawable/ic_menu_recent_history"/>
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@android:drawable/ic_menu_recent_history"
+                    app:tint="@color/accent_orange"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="考试记录"
                     android:textSize="16sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- ============ 第四行：考试列表 ============ -->
+
+        <!-- 卡片6：考试列表 -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_exam_list"
+            android:layout_width="0dp"
+            android:layout_height="120dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="8dp"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:cardBackgroundColor="@color/background_card"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="12dp">
+                <ImageView
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@android:drawable/ic_menu_agenda"
+                    app:tint="@color/accent_green"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="考试列表"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 

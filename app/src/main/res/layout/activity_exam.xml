@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="@color/background_light">
 
-    <!-- 1. 顶部栏 (倒计时等) - 保持不变 -->
+    <!-- 1. 顶部栏 (倒计时等) -->
     <LinearLayout
         android:id="@+id/layout_header"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="#F5F5F5"
+        android:layout_height="56dp"
+        android:background="@color/background_card"
         android:gravity="center_vertical"
-        android:paddingHorizontal="16dp"
-        android:orientation="horizontal">
+        android:paddingHorizontal="20dp"
+        android:orientation="horizontal"
+        android:elevation="4dp">
 
         <TextView
             android:id="@+id/tv_exam_progress"
@@ -20,7 +22,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
             android:text="第 1 / 100 题"
-            android:textColor="#666"/>
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"/>
 
         <TextView
             android:id="@+id/tv_exam_title"
@@ -28,15 +31,22 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="模拟考试"
-            android:textColor="#666" />
+            android:textColor="@color/text_primary"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"/>
 
         <TextView
             android:id="@+id/tv_timer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="45:00"
-            android:textColor="#D32F2F"
-            android:textStyle="bold"/>
+            android:textColor="@color/accent_red"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:background="@drawable/bg_button_secondary"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="4dp"/>
     </LinearLayout>
 
     <!-- 2. 内容滚动区 -->
@@ -59,21 +69,25 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="[单选题]"
-                android:background="#E3F2FD"
-                android:textColor="#2196F3"
-                android:padding="4dp"
-                android:textSize="12sp"/>
+                android:background="@drawable/bg_question_type"
+                android:textColor="@color/primary_blue"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:textSize="14sp"
+                android:textStyle="bold"/>
 
             <!-- 题干 -->
             <TextView
                 android:id="@+id/tv_question_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="16dp"
                 android:text="题目内容加载中..."
-                android:textColor="#000000"
+                android:textColor="@color/text_primary"
                 android:textSize="18sp"
-                android:lineSpacingExtra="4dp"/>
+                android:lineSpacingExtra="6dp"
+                android:background="@drawable/bg_question_content"
+                android:padding="20dp"/>
 
             <!-- 图片区域 -->
             <ImageView
@@ -97,56 +111,67 @@
                 android:id="@+id/layout_analysis"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:background="#FFF3E0"
-                android:padding="12dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/bg_analysis"
+                android:padding="16dp"
                 android:orientation="vertical"
                 android:visibility="gone">
                 <TextView
                     android:id="@+id/tv_analysis_result"
                     android:text="正确答案：B"
                     android:textStyle="bold"
-                    android:textColor="#E65100"
+                    android:textColor="@color/accent_orange"
+                    android:textSize="16sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- 3. 底部按钮栏 - 保持不变 -->
+    <!-- 3. 底部按钮栏 -->
     <LinearLayout
         android:id="@+id/layout_bottom_bar"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="64dp"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
-        android:background="#FFFFFF"
-        android:elevation="8dp">
+        android:background="@color/background_card"
+        android:elevation="12dp"
+        android:padding="8dp">
 
         <Button
             android:id="@+id/btn_prev"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:text="上一题"/>
+            android:layout_marginHorizontal="4dp"
+            android:text="上一题"
+            android:textColor="@color/background_card"
+            android:textSize="14sp"
+            android:background="@drawable/bg_button_secondary"/>
 
         <Button
             android:id="@+id/btn_submit"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:layout_marginHorizontal="4dp"
             android:text="交 卷"
-            android:textColor="#D32F2F"
-            style="@style/Widget.MaterialComponents.Button.TextButton"/>
+            android:textColor="@color/accent_red"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:background="@drawable/bg_button_secondary"/>
 
         <Button
             android:id="@+id/btn_next"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:layout_marginHorizontal="4dp"
             android:text="下一题"
-            style="@style/Widget.MaterialComponents.Button.TextButton"/>
+            android:textColor="@color/option_normal_bg"
+            android:textSize="14sp"
+            android:background="@drawable/bg_card_elevation"/>
     </LinearLayout>
 
 </RelativeLayout>
